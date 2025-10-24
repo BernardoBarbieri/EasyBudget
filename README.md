@@ -1,8 +1,3 @@
-Perfeito ✅
-Aqui está o **README COMPLETO**, já atualizado com **as 20 funcionalidades**, texto formal e pronto para colocar no GitHub.
-
----
-
 # **EasyBudget – Sistema de Organização de Eventos**
 
 ## **Descrição Geral**
