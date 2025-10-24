@@ -5,6 +5,8 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\GuestController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,4 +58,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/events/{id}/duplicate', [EventController::class, 'duplicate'])->name('events.duplicate');
+    Route::get('/events/{event_id}/guests/pdf', [GuestController::class, 'pdf'])->name('guests.pdf');
+    Route::post('/events/{event_id}/guests', [GuestController::class, 'store'])->name('guests.store');
+    Route::get('/guests/{id}/confirm', [GuestController::class, 'confirm'])->name('guests.confirm');
+    Route::delete('/guests/{id}', [GuestController::class, 'destroy'])->name('guests.destroy');
+    
+    Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', DashboardController::class)->name('dashboard');
+});
 });

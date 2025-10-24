@@ -1,120 +1,169 @@
-📌 Projeto: Sistema de Organização de Eventos
-👥 Integrantes
+Perfeito ✅
+Aqui está o **README COMPLETO**, já atualizado com **as 20 funcionalidades**, texto formal e pronto para colocar no GitHub.
 
-Bernardo Barbieri 1 – 12302619
+---
 
-Bernardo Juscelino 2 – 12303232
+# **EasyBudget – Sistema de Organização de Eventos**
 
-Pietro Debiagi 3 – 12301701
+## **Descrição Geral**
 
-Arthur Alvim 4 - 12300829
+O EasyBudget é um sistema web para gerenciamento e organização de eventos, desenvolvido em Laravel seguindo o padrão MVC e aplicando boas práticas de arquitetura.
+O sistema permite o cadastro de eventos, controle de orçamento, gerenciamento de convidados, relatórios e visualização de indicadores.
 
-Luiz Dutra 5 - 22402713
+---
 
-João Vitor Santiago 6 - 22300317
+## **Integrantes**
 
-📖 Descrição
+| Nome                | Matrícula |
+| ------------------- | --------- |
+| Bernardo Barbieri   | 12302619  |
+| Bernardo Juscelino  | 12303232  |
+| Pietro Debiagi      | 12301701  |
+| Arthur Alvim        | 12300829  |
+| Luiz Dutra          | 22402713  |
+| João Vitor Santiago | 22300317  |
 
-Este projeto é um sistema web desenvolvido em Laravel utilizando MVC (Model-View-Controller) e o padrão Repository como camada de persistência.
-O sistema permite o gerenciamento de eventos, criação de orçamentos personalizados e geração de relatórios em PDF.
+---
 
-🚀 Funcionalidades Implementadas (10/10)
+## **Tecnologias Utilizadas**
 
-Cadastro de usuários – formulário de registro integrado ao Laravel Breeze.
+* PHP 8+
+* Laravel 10/11/12
+* MySQL
+* Composer
+* Node.js / NPM
+* HTML / CSS / JavaScript
+* Barryvdh DomPDF (exportação para PDF)
+* Chart.js (gráficos)
+* Filesystem Laravel (armazenamento de imagens)
 
-Login com autenticação – controle de acesso seguro com sessões.
+---
 
-Dashboard inicial – tela de entrada após login com resumo.
+## **Funcionalidades Implementadas (20/20)**
 
-Cadastro de eventos – formulário para criar novos eventos.
+### **Autenticação e Estrutura do Sistema**
 
-Listagem de eventos – exibe os eventos do usuário autenticado.
+1. **Cadastro de Usuário**
+2. **Login e Autenticação de Sessão**
+3. **Dashboard com Resumo do Sistema**
 
-Edição de eventos – formulário para atualização de eventos existentes.
+### **Gerenciamento de Eventos**
 
-Exclusão de eventos – remoção de eventos do banco de dados.
+4. **Cadastro de Eventos**
+5. **Listagem de Eventos**
+6. **Edição de Eventos**
+7. **Exclusão de Eventos**
+8. **Upload de Imagem para o Evento**
+9. **Classificação por Categoria do Evento**
+10. **Status do Evento (Planejado, Em andamento, Concluído)**
 
-Orçamento personalizado – inclusão de itens (nome, preço, quantidade) vinculados ao evento.
+### **Orçamento**
 
-Relatórios detalhados – página com resumo do evento e dos itens de orçamento.
+11. **Cadastro de Itens de Orçamento** (nome, valor, quantidade)
+12. **Cálculo Automático do Valor Total do Orçamento**
+13. **Edição e Exclusão de Itens do Orçamento**
 
-Exportação em PDF – geração de relatório em formato PDF para download.
+### **Convidados**
 
-🛠 Tecnologias Utilizadas
+14. **Cadastro de Convidados Vinculados ao Evento**
+15. **Confirmação e Controle de Presença**
+16. **Exclusão de Convidados**
 
-PHP 8+
+### **Relatórios**
 
-Laravel 10/11/12
+17. **Relatório Detalhado do Evento**
+18. **Exportação de Relatório Completo para PDF**
+19. **Exportação da Lista de Convidados para PDF**
 
-MySQL
+### **Dashboard Gerencial**
 
-Composer
+20. **Gráfico de Resumo Financeiro dos Eventos (Chart.js)**
 
-Node.js + NPM
+---
 
-Bootstrap 5
+## **Modelagem do Banco de Dados**
 
-Laravel Breeze
- (autenticação)
+### **Tabela `events`**
 
-Barryvdh DomPDF
- (geração de PDF)
+| Campo                   | Tipo       | Descrição                         |
+| ----------------------- | ---------- | --------------------------------- |
+| id                      | bigint     | Identificador                     |
+| user_id                 | bigint     | Dono do evento                    |
+| title                   | varchar    | Nome do evento                    |
+| description             | text       | Descrição                         |
+| date                    | date       | Data                              |
+| location                | varchar    | Local                             |
+| image                   | varchar    | Caminho da imagem                 |
+| category                | varchar    | Categoria do evento               |
+| status                  | varchar    | Status do evento                  |
+| created_at / updated_at | timestamps | Controle de criação e atualização |
 
-⚙️ Instruções para Rodar o Projeto
-1. Clonar o repositório
-git clone https://github.com/seu-usuario/seu-repositorio.git
-cd seu-repositorio
+### **Tabela `budgets`**
 
-2. Instalar dependências
+| Campo                   | Tipo       | Descrição                 |
+| ----------------------- | ---------- | ------------------------- |
+| id                      | bigint     |                           |
+| event_id                | bigint     | Relacionamento com evento |
+| name                    | varchar    | Item                      |
+| price                   | decimal    | Valor unitário            |
+| quantity                | int        | Quantidade                |
+| created_at / updated_at | timestamps |                           |
+
+### **Tabela `guests`**
+
+| Campo                   | Tipo       | Descrição                  |
+| ----------------------- | ---------- | -------------------------- |
+| id                      | bigint     |                            |
+| name                    | varchar    | Nome do convidado          |
+| event_id                | bigint     | Relacionamento             |
+| confirmed               | boolean    | Presença confirmada ou não |
+| created_at / updated_at | timestamps |                            |
+
+---
+
+## **Como Executar o Projeto**
+
+```bash
+git clone https://github.com/seu-usuario/EasyBudget.git
+cd EasyBudget
+
 composer install
 npm install && npm run dev
 
-3. Configurar o .env
-
-Copie o arquivo de exemplo e configure:
-
 cp .env.example .env
-
-
-Edite as credenciais do banco de dados:
-
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=eventos_db
-DB_USERNAME=root
-DB_PASSWORD=suasenha
-
-4. Gerar chave da aplicação
 php artisan key:generate
+```
 
-5. Executar migrations
+### **Configurar Banco de Dados**
+
+No arquivo `.env`, ajustar:
+
+```
+DB_CONNECTION=mysql
+DB_DATABASE=easybudget
+DB_USERNAME=root
+DB_PASSWORD=senha
+```
+
+### **Rodar Migrations**
+
+```bash
 php artisan migrate
+```
 
-6. Iniciar servidor
+### **Executar o Servidor**
+
+```bash
 php artisan serve
+```
 
-
-Acesse no navegador:
+Acesse:
 
 http://127.0.0.1:8000
 
-🌐 URLs Principais
 
-Cadastro de usuário → /register
 
-Login → /login
+## **Conclusão**
 
-Dashboard → /dashboard
+O EasyBudget entrega uma solução completa para o gerenciamento de eventos, oferecendo organização, controle financeiro, relatórios estruturados e interface eficiente, atendendo às demandas de organização e apresentação profissional.
 
-Listar eventos → /events
-
-Criar evento → /events/create
-
-Editar evento → /events/{id}/edit
-
-Orçamento → /events/{id}/budget
-
-Relatório → /events/{id}/report
-
-Baixar PDF → /events/{id}/report/pdf

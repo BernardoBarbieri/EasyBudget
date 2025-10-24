@@ -3,32 +3,67 @@
 @section('title', 'Editar Evento')
 
 @section('content')
-<div class="container">
-    <h2>Editar Evento</h2>
+<div class="form-wrapper">
 
-    <form action="{{ route('events.update', $event->id) }}" method="POST" class="event-card" style="padding:20px;">
-        @csrf @method('PUT')
+    <h1>Editar Evento</h1>
+
+    <form action="{{ route('events.update', $event->id) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+
         <div class="form-group">
-            <label for="title">Título</label>
-            <input type="text" name="title" id="title" value="{{ $event->title }}" required>
+            <label>Título</label>
+            <input type="text" name="title" value="{{ $event->title }}" class="form-input" required>
         </div>
+
         <div class="form-group">
-            <label for="description">Descrição</label>
-            <textarea name="description" id="description">{{ $event->description }}</textarea>
+            <label>Descrição</label>
+            <textarea name="description" class="form-textarea" rows="4">{{ $event->description }}</textarea>
         </div>
+
         <div class="form-group">
-            <label for="date">Data</label>
-            <input type="date" name="date" id="date" value="{{ $event->date }}" required>
+            <label>Data</label>
+            <input type="date" name="date" value="{{ $event->date }}" class="form-input" required>
         </div>
+
         <div class="form-group">
-            <label for="location">Localização</label>
-            <input type="text" name="location" id="location" value="{{ $event->location }}" required>
+            <label>Localização</label>
+            <input type="text" name="location" value="{{ $event->location }}" class="form-input" required>
         </div>
+
         <div class="form-group">
-            <label for="image">Imagem (URL)</label>
-            <input type="url" name="image" id="image" value="{{ $event->image }}">
+            <label>Imagem do Evento</label>
+            <input type="file" name="image" class="form-file">
+            @if($event->image)
+                <img src="{{ asset('storage/' . $event->image) }}" class="mt-3" style="max-width: 200px; border-radius: 8px;">
+            @endif
         </div>
-        <button type="submit" class="btn btn-primary">Atualizar</button>
+
+        <div class="form-group">
+            <label>Categoria</label>
+            <select name="category" class="form-select" required>
+                <option value="Casamento" {{ $event->category == 'Casamento' ? 'selected' : '' }}>Casamento</option>
+                <option value="Festa" {{ $event->category == 'Festa' ? 'selected' : '' }}>Festa</option>
+                <option value="Show" {{ $event->category == 'Show' ? 'selected' : '' }}>Show</option>
+                <option value="Formatura" {{ $event->category == 'Formatura' ? 'selected' : '' }}>Formatura</option>
+                <option value="Reunião Corporativa" {{ $event->category == 'Reunião Corporativa' ? 'selected' : '' }}>Reunião Corporativa</option>
+                <option value="Seminário" {{ $event->category == 'Seminário' ? 'selected' : '' }}>Seminário</option>
+                <option value="Treinamento / Workshop" {{ $event->category == 'Treinamento / Workshop' ? 'selected' : '' }}>Treinamento / Workshop</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Status</label>
+            <select name="status" class="form-select" required>
+                <option value="Planejado" {{ $event->status == 'Planejado' ? 'selected' : '' }}>Planejado</option>
+                <option value="Em andamento" {{ $event->status == 'Em andamento' ? 'selected' : '' }}>Em andamento</option>
+                <option value="Concluído" {{ $event->status == 'Concluído' ? 'selected' : '' }}>Concluído</option>
+            </select>
+        </div>
+
+        <button class="btn-primary-submit">Salvar Alterações</button>
+
     </form>
+
 </div>
 @endsection

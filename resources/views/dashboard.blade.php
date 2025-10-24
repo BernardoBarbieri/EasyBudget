@@ -25,8 +25,10 @@
         </div>
     </div>
 
+
     {{-- Meus eventos --}}
     <h2 style="margin-top: 10px;">Meus Eventos</h2>
+    <p class="text-muted">Total de eventos: <strong>{{ $totalEvents }}</strong></p>
 
     @if(isset($events) && $events->count())
         <div class="events-grid">
@@ -55,8 +57,42 @@
                 </div>
             @endforeach
         </div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <strong>Resumo Financeiro dos Eventos</strong>
+    </div>
+    <div class="card-body">
+        <canvas id="chartOrcamento"></canvas>
+    </div>
+</div>
+
     @else
         <p class="no-events">Você ainda não tem eventos. Clique em “Criar Evento”.</p>
     @endif
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ctx = document.getElementById('chartOrcamento').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: @json($labels),
+            datasets: [{
+                label: 'Total (R$)',
+                data: @json($totals),
+                borderWidth: 1,
+                backgroundColor: '#0d6efd'
+            }]
+        },
+        options: {
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+
 @endsection

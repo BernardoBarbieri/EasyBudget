@@ -15,6 +15,8 @@ class Event extends Model
         'date',
         'location',
         'image',
+        'category',
+        'status',
         'user_id',
     ];
 
