@@ -1,4 +1,5 @@
-@extends('layouts.app')
+@extends('layouts.main')
+
 @section('content')
 <h1>Novo Serviço</h1>
 <form method="POST" action="/services">@csrf

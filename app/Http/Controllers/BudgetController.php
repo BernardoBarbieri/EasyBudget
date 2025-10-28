@@ -2,39 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Event;
 use App\Models\Budget;
 use Illuminate\Http\Request;
 
 class BudgetController extends Controller
 {
-    public function show($id)
+    public function store(Request $request)
     {
-        $event = Event::with('budgets')->findOrFail($id);
-        return view('budgets.show', compact('event'));
-    }
-
-    public function store(Request $request, $id)
-    {
-        $event = Event::findOrFail($id);
-
-        $request->validate([
-            'item' => 'required|string|max:255',
+        $validated = $request->validate([
+            'event_id' => 'required|integer|exists:events,id',
+            'description' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
+            'quantity' => 'required|integer|min:1',
         ]);
 
-        $event->budgets()->create([
-            'item' => $request->item,
-            'price' => $request->price,
-        ]);
-
-        return redirect()->route('events.budget', $event->id)
-                         ->with('success', 'Item de orçamento adicionado com sucesso!');
+        Budget::create($validated);
+        return redirect()->back()->with('success', 'Item adicionado com sucesso!');
     }
 
-    public function builder($id)
+    public function destroy($id)
     {
-        $event = Event::with('budgets')->findOrFail($id);
-        return view('budgets.builder', compact('event'));
+        $budget = Budget::findOrFail($id);
+        $budget->delete();
+
+        return redirect()->back()->with('success', 'Item removido com sucesso!');
     }
 }

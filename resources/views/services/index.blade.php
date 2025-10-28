@@ -1,4 +1,5 @@
-@extends('layouts.app')
+@extends('layouts.main')
+
 @section('content')
 <h1>Serviços</h1>
 <a href="/services/create">Novo Serviço</a>

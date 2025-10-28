@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use App\Models\Event;
+use App\Models\Budget;
 
 class DashboardController extends Controller
 {
@@ -12,24 +12,23 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        // Busca todos os eventos do usuário logado
-        $events = Event::where('user_id', $user->id)->get();
+        // Quantidade de eventos e orçamentos
+        $events = Event::where('user_id', $user->id)->count();
 
-        $labels = [];
-        $totais = [];
+        $guests = \App\Models\Guest::whereHas('event', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->count();
 
-        foreach ($events as $event) {
-            $labels[] = $event->title;
+        $totalBudget = Budget::whereHas('event', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->sum(\DB::raw('price * quantity'));
 
-            // Soma o total do orçamento desse evento (direto no banco)
-            $total = DB::table('budgets')
-                ->where('event_id', $event->id)
-                ->sum(DB::raw('price * quantity'));
+        // Dados para o gráfico
+        $chartLabels = Event::where('user_id', $user->id)->pluck('title');
+        $chartValues = Event::where('user_id', $user->id)->get()->map(function ($event) {
+            return $event->budgets->sum(fn($b) => $b->price * $b->quantity);
+        });
 
-            $totais[] = $total ?? 0;
-        }
-
-        // Retorna os dados para a view da dashboard
-        return view('dashboard', compact('events', 'labels', 'totais'));
+        return view('dashboard', compact('events', 'guests', 'totalBudget', 'chartLabels', 'chartValues'));
     }
 }

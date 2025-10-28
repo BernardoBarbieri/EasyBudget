@@ -2,46 +2,65 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Event;
 use App\Models\Guest;
+use App\Models\Event;
 use Illuminate\Http\Request;
 
 class GuestController extends Controller
 {
-    public function index($eventId)
+    /**
+     * Mostra todos os convidados de um evento específico.
+     */
+    public function index($event_id)
     {
-        $event = Event::with('guests')->findOrFail($eventId);
-        return view('guests.index', compact('event'));
+        $event = Event::findOrFail($event_id);
+        $guests = $event->guests ?? collect(); // Evita erro se não houver convidados
+
+        return view('guests.index', compact('event', 'guests'));
     }
 
-    public function store(Request $request, $eventId)
+    /**
+     * Armazena um novo convidado no banco.
+     */
+    public function store(Request $request, $event_id)
     {
-        $data = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
         ]);
 
-        $data['event_id'] = $eventId;
-        $data['confirmed'] = false;
+        Guest::create([
+            'name' => $request->name,
+            'email' => $request->email ?? null,
+            'event_id' => $event_id,
+            'confirmed' => false,
+        ]);
 
-        Guest::create($data);
-
-        return back()->with('success', 'Convidado adicionado com sucesso!');
+        return redirect()->route('guests.index', $event_id)
+                         ->with('success', 'Convidado adicionado com sucesso!');
     }
 
-    public function confirm($guestId)
+    /**
+     * Marca um convidado como confirmado.
+     */
+    public function confirm($event_id, $guest_id)
     {
-        $guest = Guest::findOrFail($guestId);
+        $guest = Guest::where('event_id', $event_id)->findOrFail($guest_id);
         $guest->update(['confirmed' => true]);
 
-        return back()->with('success', 'Presença confirmada!');
+        return redirect()->route('guests.index', $event_id)
+                         ->with('success', 'Presença confirmada com sucesso!');
     }
 
-    public function destroy($guestId)
+    /**
+     * Exclui um convidado.
+     */
+    public function destroy($event_id, $guest_id)
     {
-        $guest = Guest::findOrFail($guestId);
+        $guest = Guest::where('event_id', $event_id)->findOrFail($guest_id);
         $guest->delete();
 
-        return back()->with('success', 'Convidado removido com sucesso!');
+        return redirect()->route('guests.index', $event_id)
+                         ->with('success', 'Convidado removido com sucesso!');
     }
 }

@@ -1,4 +1,5 @@
-@extends('layouts.app')
+@extends('layouts.main')
+
 @section('content')
 <h1>{{ $event->title }}</h1>
 <p><strong>Categoria:</strong> {{ $event->category }}</p>

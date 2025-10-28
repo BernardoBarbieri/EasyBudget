@@ -11,8 +11,9 @@ class Budget extends Model
 
     protected $fillable = [
         'event_id',
-        'item',
-        'price'
+        'description',
+        'price',
+        'quantity',
     ];
 
     public function event()

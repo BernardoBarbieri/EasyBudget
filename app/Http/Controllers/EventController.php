@@ -4,6 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use Illuminate\Http\Request;
+use App\Strategies\Report\SummaryReport;
+use App\Strategies\Report\FullReport;
+use App\Strategies\Report\FinancialReport;
+use App\Strategies\Report\ReportStrategy;
+use App\Factories\EventFactory;
+use Barryvdh\DomPDF\Facade\Pdf; 
+use App\Models\Guest;
+use App\Models\Budget;
+
+
 
 class EventController extends Controller
 {
@@ -43,7 +53,8 @@ public function index(Request $request)
             $data['image'] = $request->file('image')->store('events', 'public');
         }
 
-        Event::create($data);
+        EventFactory::create($request->category ?? 'geral', $data);
+
 
         return redirect()->route('events.index')->with('success', 'Evento criado com sucesso!');
     }
@@ -103,4 +114,66 @@ public function index(Request $request)
 
         return redirect()->route('events.index')->with('success', 'Evento excluído com sucesso!');
     }
+
+    public function generateReport($id, $type)
+{
+    $event = Event::findOrFail($id);
+
+    switch ($type) {
+        case 'summary':
+            $strategy = new SummaryReport();
+            break;
+        case 'financial':
+            $strategy = new FinancialReport();
+            break;
+        default:
+            $strategy = new FullReport();
+            break;
+    }
+
+    return $strategy->generate($event);
+}
+
+public function budget($id)
+{
+    $event = \App\Models\Event::findOrFail($id);
+    $budgets = $event->budgets; // relação já existente
+
+    return view('events.budget', compact('event', 'budgets'));
+}
+
+
+
+public function report($id)
+{
+    $event = Event::with(['guests', 'budgets'])->findOrFail($id);
+
+    // Totais simples
+    $totalGuests = $event->guests->count();
+    $confirmedGuests = $event->guests->where('confirmed', true)->count();
+    $totalBudget = $event->budgets->sum(function ($b) {
+        return $b->price * $b->quantity;
+    });
+
+    // Exibir na tela antes de gerar o PDF
+    return view('events.report', compact('event', 'totalGuests', 'confirmedGuests', 'totalBudget'));
+}
+
+public function downloadPDF($id)
+{
+    $event = Event::with(['guests', 'budgets'])->findOrFail($id);
+
+    $totalGuests = $event->guests->count();
+    $confirmedGuests = $event->guests->where('confirmed', true)->count();
+    $totalBudget = $event->budgets->sum(function ($b) {
+        return $b->price * $b->quantity;
+    });
+
+    $pdf = Pdf::loadView('events.report-pdf', compact('event', 'totalGuests', 'confirmedGuests', 'totalBudget'))
+              ->setPaper('a4', 'portrait');
+
+    return $pdf->download('relatorio_evento_'.$event->id.'.pdf');
+}
+
+
 }

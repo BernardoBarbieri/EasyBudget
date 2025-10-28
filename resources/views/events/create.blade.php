@@ -1,4 +1,5 @@
-@extends('layouts.app')
+@extends('layouts.main')
+
 
 @section('title', 'Criar Novo Evento')
 

@@ -1,4 +1,5 @@
-@extends('layouts.app')
+@extends('layouts.main')
+
 @section('content')
 <h1>Montar Orçamento - {{ $event->title }}</h1>
 <div>
