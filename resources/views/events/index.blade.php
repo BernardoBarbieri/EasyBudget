@@ -59,6 +59,8 @@
                             <a class="btn-sm btn-budget" href="{{ route('events.budget', $event->id) }}">Orçamento</a>
                             <a class="btn-sm btn-report" href="{{ route('events.report', $event->id) }}">Relatório</a>
                             <a class="btn-sm btn-pdf" href="{{ route('events.report.pdf', $event->id) }}">PDF</a>
+                            <a class="btn btn-outline" href="{{ route('guests.index', $event->id) }}">Convidados</a>
+
 
                             <form action="{{ route('events.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este evento?')">
                                 @csrf

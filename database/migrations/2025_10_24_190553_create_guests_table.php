@@ -11,8 +11,9 @@ return new class extends Migration
         Schema::create('guests', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('event_id')->constrained()->onDelete('cascade');
+            $table->string('email')->nullable();
             $table->boolean('confirmed')->default(false);
+            $table->foreignId('event_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -22,4 +23,3 @@ return new class extends Migration
         Schema::dropIfExists('guests');
     }
 };
-

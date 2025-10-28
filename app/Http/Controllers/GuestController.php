@@ -5,54 +5,43 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Guest;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Str;
 
 class GuestController extends Controller
 {
-    public function store(Request $request, $event_id)
+    public function index($eventId)
     {
-        $event = Event::where('user_id', auth()->id())->findOrFail($event_id);
-
-        $request->validate([
-            'name' => 'required|string|max:255'
-        ]);
-
-        Guest::create([
-            'name' => $request->name,
-            'event_id' => $event->id,
-            'confirmed' => false
-        ]);
-
-        return back()->with('success', 'Convidado adicionado!');
+        $event = Event::with('guests')->findOrFail($eventId);
+        return view('guests.index', compact('event'));
     }
 
-    public function confirm($id)
+    public function store(Request $request, $eventId)
     {
-        $guest = Guest::findOrFail($id);
-        $guest->confirmed = !$guest->confirmed; // alterna pendente/confirmado
-        $guest->save();
-
-        return back()->with('success', 'Status atualizado!');
-    }
-
-    public function destroy($id)
-    {
-        Guest::findOrFail($id)->delete();
-        return back()->with('success', 'Convidado removido.');
-    }
-
-    // PDF
-    public function pdf($event_id)
-    {
-        $event = Event::where('user_id', auth()->id())->with('guests')->findOrFail($event_id);
-
-        $pdf = Pdf::loadView('guests.pdf', [
-            'event' => $event,
-            'guests' => $event->guests,
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
         ]);
 
-        $fileName = 'convidados_' . Str::slug($event->title) . '.pdf';
-        return $pdf->download($fileName);
+        $data['event_id'] = $eventId;
+        $data['confirmed'] = false;
+
+        Guest::create($data);
+
+        return back()->with('success', 'Convidado adicionado com sucesso!');
+    }
+
+    public function confirm($guestId)
+    {
+        $guest = Guest::findOrFail($guestId);
+        $guest->update(['confirmed' => true]);
+
+        return back()->with('success', 'Presença confirmada!');
+    }
+
+    public function destroy($guestId)
+    {
+        $guest = Guest::findOrFail($guestId);
+        $guest->delete();
+
+        return back()->with('success', 'Convidado removido com sucesso!');
     }
 }

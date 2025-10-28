@@ -31,8 +31,9 @@
             </nav>
             <div class="auth-buttons">
                 @guest
-                    <button id="loginBtn" class="btn btn-outline">Login</button>
-                    <button id="registerBtn" class="btn btn-primary">Cadastre-se</button>
+                    <a href="{{ route('login') }}" class="btn btn-outline">Login</a>
+                    <a href="{{ route('register') }}" class="btn btn-primary">Cadastre-se</a>
+
                 @else
                     <span style="margin-right: 10px;">👋 {{ Auth::user()->name }}</span>
                     <form method="POST" action="{{ route('logout') }}" style="display:inline;">

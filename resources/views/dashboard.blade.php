@@ -25,10 +25,8 @@
         </div>
     </div>
 
-
     {{-- Meus eventos --}}
     <h2 style="margin-top: 10px;">Meus Eventos</h2>
-    <p class="text-muted">Total de eventos: <strong>{{ $totalEvents }}</strong></p>
 
     @if(isset($events) && $events->count())
         <div class="events-grid">
@@ -57,42 +55,53 @@
                 </div>
             @endforeach
         </div>
-
-<div class="card mt-4">
-    <div class="card-header">
-        <strong>Resumo Financeiro dos Eventos</strong>
-    </div>
-    <div class="card-body">
-        <canvas id="chartOrcamento"></canvas>
-    </div>
-</div>
-
     @else
         <p class="no-events">Você ainda não tem eventos. Clique em “Criar Evento”.</p>
     @endif
+
+    {{-- Gráfico de resumo financeiro --}}
+    <div class="mt-5">
+        <h2>Resumo Financeiro dos Eventos</h2>
+        <p>Veja o total de orçamento de cada evento cadastrado.</p>
+        <div style="background:#fff; border-radius:10px; padding:20px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+            <canvas id="eventChart" width="400" height="150"></canvas>
+        </div>
+    </div>
 </div>
 
+{{-- Script do Chart.js --}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-    const ctx = document.getElementById('chartOrcamento').getContext('2d');
-    new Chart(ctx, {
+    const ctx = document.getElementById('eventChart');
+    const chart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: @json($labels),
+            labels: @json($labels ?? []),
             datasets: [{
                 label: 'Total (R$)',
-                data: @json($totals),
+                data: @json($totais ?? []),
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
                 borderWidth: 1,
-                backgroundColor: '#0d6efd'
+                borderRadius: 6
             }]
         },
         options: {
+            responsive: true,
+            plugins: {
+                legend: { display: true, position: 'top' },
+            },
             scales: {
-                y: { beginAtZero: true }
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return 'R$ ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                        }
+                    }
+                }
             }
         }
     });
 </script>
-
 @endsection

@@ -29,4 +29,10 @@ class Event extends Model
     {
         return $this->hasMany(Budget::class);
     }
+
+    public function guests()
+{
+    return $this->hasMany(Guest::class);
+}
+
 }

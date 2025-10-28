@@ -67,5 +67,14 @@ Route::middleware(['auth'])->group(function () {
     
     Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+
+    Route::prefix('events/{event}')->group(function () {
+    Route::get('/guests', [GuestController::class, 'index'])->name('guests.index');
+    Route::post('/guests', [GuestController::class, 'store'])->name('guests.store');
+});
+
+    Route::post('/guests/{guest}/confirm', [GuestController::class, 'confirm'])->name('guests.confirm');
+    Route::delete('/guests/{guest}', [GuestController::class, 'destroy'])->name('guests.destroy');
+
 });
 });
