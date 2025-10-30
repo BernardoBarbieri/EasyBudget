@@ -7,18 +7,25 @@ use Illuminate\Http\Request;
 
 class BudgetController extends Controller
 {
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'event_id' => 'required|integer|exists:events,id',
-            'description' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
-            'quantity' => 'required|integer|min:1',
-        ]);
+   public function store(Request $request)
+{
+    $request->validate([
+        'event_id' => 'required|exists:events,id',
+        'description' => 'required|string',
+        'price' => 'required|numeric',
+        'quantity' => 'required|integer|min:1',
+    ]);
 
-        Budget::create($validated);
-        return redirect()->back()->with('success', 'Item adicionado com sucesso!');
-    }
+    Budget::create([
+        'event_id' => $request->event_id,
+        'description' => $request->description,
+        'price' => $request->price,
+        'quantity' => $request->quantity,
+    ]);
+
+    return back()->with('success', 'Item adicionado ao orçamento!');
+}
+
 
     public function destroy($id)
     {
@@ -28,3 +35,4 @@ class BudgetController extends Controller
         return redirect()->back()->with('success', 'Item removido com sucesso!');
     }
 }
+ 

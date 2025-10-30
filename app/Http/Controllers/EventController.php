@@ -1,33 +1,94 @@
 <?php
 
+
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;     
 use App\Models\Event;
-use Illuminate\Http\Request;
+use App\Models\Guest;
+use App\Models\Budget;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Strategies\Report\SummaryReport;
 use App\Strategies\Report\FullReport;
 use App\Strategies\Report\FinancialReport;
 use App\Strategies\Report\ReportStrategy;
-use App\Factories\EventFactory;
-use Barryvdh\DomPDF\Facade\Pdf; 
-use App\Models\Guest;
-use App\Models\Budget;
+
 
 
 
 class EventController extends Controller
 {
+
 public function index(Request $request)
 {
-    $search = $request->input('search');
+    $userId = auth()->id();
 
-    $events = Event::where('user_id', auth()->id())
-        ->when($search, function ($query, $search) {
-            return $query->where('title', 'like', "%{$search}%");
-        })
-        ->get();
+    // Filtros vindos da querystring
+    $q        = $request->get('q');
+    $status   = $request->get('status');
+    $category = $request->get('category');
+    $from     = $request->get('from');   // yyyy-mm-dd
+    $to       = $request->get('to');     // yyyy-mm-dd
+    $sort     = $request->get('sort', 'date_desc'); // date_desc | date_asc
+    $perPage  = (int) $request->get('perPage', 9);
 
-    return view('events.index', compact('events', 'search'));
+    $query = Event::where('user_id', $userId);
+
+    // Busca livre por título/local
+    if (!empty($q)) {
+        $query->where(function ($sub) use ($q) {
+            $sub->where('title', 'like', "%{$q}%")
+                ->orWhere('location', 'like', "%{$q}%");
+        });
+    }
+
+    // Filtro de status
+    if (!empty($status)) {
+        $query->where('status', $status);
+    }
+
+    // Filtro de categoria
+    if (!empty($category)) {
+        $query->where('category', $category);
+    }
+
+    // Intervalo de datas
+    if (!empty($from)) {
+        $query->whereDate('date', '>=', $from);
+    }
+    if (!empty($to)) {
+        $query->whereDate('date', '<=', $to);
+    }
+
+    // Ordenação
+    if ($sort === 'date_asc') {
+        $query->orderBy('date', 'asc');
+    } else {
+        $query->orderBy('date', 'desc');
+    }
+
+    // Contadores úteis
+    $events = $query
+        ->withCount([
+            'guests',
+            'guests as guests_confirmed_count' => function ($q) {
+                $q->where('confirmed', true);
+            },
+            'budgets'
+        ])
+        ->paginate($perPage)
+        ->withQueryString();
+
+    // Opções de selects (pode vir do banco/config se preferir)
+    $statusOptions = ['Planejado', 'Em andamento', 'Concluído', 'Cancelado'];
+    $categoryOptions = [
+        'Casamento', 'Aniversário', 'Corporativo',
+        'Religioso', 'Social', 'Acadêmico', 'Outros'
+    ];
+
+    $filters = compact('q', 'status', 'category', 'from', 'to', 'sort', 'perPage');
+
+    return view('events.index', compact('events', 'filters', 'statusOptions', 'categoryOptions'));
 }
 
 
