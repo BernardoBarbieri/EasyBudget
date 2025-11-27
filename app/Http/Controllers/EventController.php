@@ -12,7 +12,7 @@ use App\Strategies\Report\SummaryReport;
 use App\Strategies\Report\FullReport;
 use App\Strategies\Report\FinancialReport;
 use App\Strategies\Report\ReportStrategy;
-
+use App\Factories\EventFactory;
 
 
 
